@@ -3,143 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutorial FreelancerEscrow - Stellar Soroban</title>
+    <title>Tutorial: Contrato Inteligente FreelancerEscrow en Stellar Soroban</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui; background: #0d1117; color: #e6edf3; line-height: 1.6; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; }
-        nav { background: #161b22; padding: 15px; margin-bottom: 30px; border-radius: 10px; }
-        nav ul { display: flex; gap: 20px; list-style: none; flex-wrap: wrap; }
-        nav a { color: #58a6ff; text-decoration: none; padding: 8px 16px; border-radius: 6px; }
-        nav a:hover { background: #58a6ff; color: #0d1117; }
-        section { background: #161b22; padding: 25px; margin-bottom: 20px; border-radius: 10px; }
-        h1 { font-size: 2rem; margin-bottom: 20px; color: #58a6ff; }
-        h2 { font-size: 1.5rem; margin: 25px 0 15px; color: #3fb950; }
-        h3 { font-size: 1.2rem; margin: 20px 0 10px; color: #f0883e; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f5f5f5; color: #333; line-height: 1.7; padding: 20px; }
+        .container { max-width: 950px; margin: 0 auto; }
+        
+        header { background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: white; padding: 40px; border-radius: 12px; margin-bottom: 30px; text-align: center; }
+        header h1 { font-size: 2.2rem; color: white; margin-bottom: 10px; }
+        header p { font-size: 1.1rem; opacity: 0.9; }
+        
+        nav { background: white; padding: 15px; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        nav ul { display: flex; gap: 15px; list-style: none; flex-wrap: wrap; justify-content: center; }
+        nav a { color: #2c5282; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 500; transition: all 0.2s; }
+        nav a:hover { background: #2c5282; color: white; }
+        
+        section { background: white; padding: 30px; margin-bottom: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        section:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        
+        h1 { font-size: 1.8rem; margin-bottom: 20px; color: #1a365d; border-bottom: 3px solid #2c5282; padding-bottom: 10px; }
+        h2 { font-size: 1.4rem; margin: 25px 0 12px; color: #2c5282; }
+        h3 { font-size: 1.15rem; margin: 18px 0 8px; color: #4a5568; }
+        
+        p { margin-bottom: 12px; }
+        
         pre.command {
-            background: #0d1117;
-            padding: 15px 20px;
+            background: #1a202c;
+            padding: 18px 22px;
             border-radius: 8px;
-            font-family: 'Fira Code', monospace;
+            font-family: 'Fira Code', 'Consolas', monospace;
             font-size: 0.9rem;
             overflow-x: auto;
-            border-left: 4px solid #3fb950;
-            color: #3fb950;
-            margin: 10px 0;
+            border-left: 5px solid #48bb78;
+            color: #e2e8f0;
+            margin: 12px 0;
         }
+        
         .code {
-            background: #0d1117;
-            padding: 15px 20px;
+            background: #edf2f7;
+            padding: 15px 18px;
             border-radius: 8px;
-            font-family: monospace;
+            font-family: 'Fira Code', monospace;
             font-size: 0.85rem;
             overflow-x: auto;
             white-space: pre;
+            border: 1px solid #e2e8f0;
         }
+        
+        .explanation {
+            background: #ebf8ff;
+            padding: 15px 18px;
+            border-radius: 8px;
+            border-left: 4px solid #4299e1;
+            margin: 15px 0;
+            color: #2d3748;
+        }
+        
+        .tip {
+            background: #f0fff4;
+            padding: 15px 18px;
+            border-radius: 8px;
+            border-left: 4px solid #48bb78;
+            margin: 15px 0;
+        }
+        
+        .warning {
+            background: #fffaf0;
+            padding: 15px 18px;
+            border-radius: 8px;
+            border-left: 4px solid #ed8936;
+            margin: 15px 0;
+        }
+        
         table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #30363d; }
-        th { background: #0d1117; color: #58a6ff; }
-        code { background: #0d1117; padding: 3px 8px; border-radius: 4px; color: #f0883e; }
-        footer { text-align: center; padding: 20px; color: #8b949e; }
-        .note { background: #1f6feb22; padding: 15px; border-radius: 8px; border-left: 4px solid #1f6feb; margin: 15px 0; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #2c5282; color: white; }
+        tr:hover { background: #f7fafc; }
+        
+        code { background: #edf2f7; padding: 3px 8px; border-radius: 4px; color: #c53030; font-family: monospace; font-size: 0.9em; }
+        
+        footer { text-align: center; padding: 25px; color: #718096; }
+        
+        .step-number {
+            display: inline-block;
+            background: #2c5282;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            margin-right: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .objective-box {
+            background: #faf5ff;
+            border: 2px solid #9f7aea;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .objective-box h3 { color: #6b46c1; margin-top: 0; }
+        
+        ul, ol { margin-left: 25px; margin-bottom: 15px; }
+        li { margin-bottom: 8px; }
     </style>
 </head>
 <body>
     <div class="container">
+        <header>
+            <h1>💼 Contrato Inteligente FreelancerEscrow</h1>
+            <p>Aprende a crear y desplegar un contrato escrow para freelancers en Stellar Soroban</p>
+        </header>
+
         <nav>
             <ul>
-                <li><a href="#instalar">Instalar</a></li>
-                <li><a href="#compilar">Compilar</a></li>
-                <li><a href="#deploy">Deploy</a></li>
-                <li><a href="#invoke">Invocar</a></li>
+                <li><a href="#objetivos">🎯 Objetivos</a></li>
+                <li><a href="#entorno">⚙️ Entorno</a></li>
+                <li><a href="#compilar">🔨 Compilar</a></li>
+                <li><a href="#deploy">🚀 Deploy</a></li>
+                <li><a href="#invocar">📞 Invocar</a></li>
             </ul>
         </nav>
 
-        <section id="instalar">
-            <h1>Instalar Entorno</h1>
-            
-            <h2>1. Instalar Rust</h2>
-            <pre class="command">curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh</pre>
+        <section id="objetivos">
+            <h1>🎯 Objetivos de Aprendizaje</h1>
+            <div class="objective-box">
+                <h3>Al terminar este tutorial podrás:</h3>
+                <ul>
+                    <li>Instalar y configurar el entorno de desarrollo para Stellar Soroban</li>
+                    <li>Compilar un contrato inteligente de Rust a WebAssembly (WASM)</li>
+                    <li>Desplegar el contrato en la testnet de Stellar</li>
+                    <li>Interactuar con el contrato mediante invoked transactions</li>
+                </ul>
+            </div>
+            <div class="explanation">
+                <strong>¿Qué es un contrato escrow?</strong> Un contrato escrow es un acuerdo neutral donde un tercero retiene el dinero hasta que se cumplan ciertas condiciones. En este caso, el contrato inteligente de Stellar retiene los fondos hasta que el cliente aprueba cada "hito" (milestone) completado por el freelancer.
+            </div>
+        </section>
 
-            <h2>2. Instalar Stellar CLI</h2>
+        <section id="entorno">
+            <h1>⚙️ Instalación del Entorno de Desarrollo</h1>
+            
+            <p>Antes de escribir nuestro contrato inteligente, necesitamos configurar las herramientas de desarrollo. Esto incluye el lenguaje de programación Rust y la CLI de Stellar.</p>
+
+            <h2><span class="step-number">1</span>Instalar Rust</h2>
+            <div class="explanation">
+                <strong>¿Por qué Rust?</strong> Stellar Soroban utiliza Rust porque es un lenguaje moderno, seguro y eficiente que compila a WebAssembly. WebAssembly (WASM) es un formato de código binario que se ejecuta en cualquier navegador o blockchain de manera segura y rápida.
+            </div>
+            <pre class="command">curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh</pre>
+            <div class="tip">
+                <strong>💡 Consejo:</strong> Durante la instalación,选择选项 1 (default) para instalar todas las herramientas necesarias.
+            </div>
+
+            <h2><span class="step-number">2</span>Verificar instalación de Rust</h2>
+            <pre class="command">rustc --version && cargo --version</pre>
+
+            <h2><span class="step-number">3</span>Instalar Stellar CLI</h2>
+            <div class="explanation">
+                <strong>¿Qué es la Stellar CLI?</strong> Es una herramienta de línea de comandos que nos permite compilar, desplegar e interactuar con contratos inteligentes en la red Stellar.
+            </div>
             <pre class="command">cargo install stellar-cli --locked</pre>
+            <div class="warning">
+                <strong>⚠️ Nota:</strong> La compilación puede tomar varios minutos (5-15) dependiendo de tu computadora.
+            </div>
+
+            <h2><span class="step-number">4</span>Verificar Stellar CLI</h2>
+            <pre class="command">stellar --version</pre>
         </section>
 
         <section id="compilar">
-            <h1>Compilar Contrato</h1>
+            <h1>🔨 Compilar el Contrato Inteligente</h1>
             
-            <h2>1. Agregar al Cargo.toml</h2>
+            <p>Ahora vamos a configurar nuestro proyecto para que compile a WebAssembly. WebAssembly es un formato de código binario que se ejecuta en la blockchain de Stellar.</p>
+
+            <h2><span class="step-number">1</span>Agregar crate-type al Cargo.toml</h2>
+            <div class="explanation">
+                <strong>¿Por qué necesitamos esto?</strong> Necesitamos generar dos tipos de archivos: 
+                <ul>
+                    <li><code>cdylib</code>: Biblioteca dinámica en C para que pueda ser llamada desde fuera (el contrato desplegable)</li>
+                    <li><code>rlib</code>: Biblioteca estática de Rust para testing interno</li>
+                </ul>
+            </div>
+            <p>Abre el archivo <code>Cargo.toml</code> de tu proyecto y agrega:</p>
             <pre class="code">[lib]
 crate-type = ["cdylib", "rlib"]</pre>
 
-            <h2>2. Instalar target WASM</h2>
+            <h2><span class="step-number">2</span>Instalar objetivo WebAssembly</h2>
+            <div class="explanation">
+                <strong>¿Qué es wasm32-unknown-unknown?</strong> Es la arquitectura objetivo para compilar Rust a WebAssembly. Significa:
+                <ul>
+                    <li><code>wasm32</code>: Arquitectura de 32 bits</li>
+                    <li><code>unknown</code>: Sistema operativo desconocido (WebAssembly no tiene SO)</li>
+                    <li><code>unknown</code>: Target de entorno desconocido</li>
+                </ul>
+            </div>
             <pre class="command">rustup target add wasm32-unknown-unknown</pre>
 
-            <h2>3. Compilar</h2>
+            <h2><span class="step-number">3</span>Compilar a WebAssembly</h2>
             <pre class="command">cargo build --release --target wasm32-unknown-unknown</pre>
 
-            <h2>4. Verificar archivo</h2>
-            <pre class="command">ls target/wasm32-unknown-unknown/release/freelancer_escrow.wasm</pre>
+            <h2><span class="step-number">4</span>Verificar archivo generado</h2>
+            <pre class="command">ls -la target/wasm32-unknown-unknown/release/freelancer_escrow.wasm</pre>
+            <div class="tip">
+                <strong>💡 Consejo:</strong> El archivo .wasm debería tener un tamaño entre 20KB y 50KB aproximadamente.
+            </div>
         </section>
 
         <section id="deploy">
-            <h1>Deploy en Stellar Testnet</h1>
+            <h1>🚀 Desplegar el Contrato en Testnet</h1>
             
-            <h2>1. Generar cuenta</h2>
+            <div class="explanation">
+                <strong>¿Por qué Testnet?</strong> La testnet es una red de pruebas de Stellar donde no usamos dinero real. Es el entorno ideal para aprender y experimentar antes de usar la red principal (Mainnet).
+            </div>
+
+            <h2><span class="step-number">1</span>Generar par de claves (密钥对)</h2>
+            <div class="explanation">
+                <strong>¿Qué es una clave pública y privada?</strong> 
+                <ul>
+                    <li><strong>Dirección pública (Public Key)</strong>: Como tu número de cuenta bancaria, la comparten para recibir pagos</li>
+                    <li><strong>Clave privada (Secret Key)</strong>: Como tu contraseña, NUNCA la compartas con nadie</li>
+                </ul>
+            </div>
             <pre class="command">stellar keys generate testuser</pre>
 
-            <h2>2. Obtener XLM de prueba</h2>
-            <pre class="command">curl "https://friendbot.stellar.org/?addr=TU_DIRECCION"</pre>
+            <h2><span class="step-number">2</span>Obtener XLM de prueba</h2>
+            <div class="explanation">
+                <strong>¿Qué es Friendbot?</strong> Es un servicio que otorga XLM de prueba gratuitos para desarrolladores. Solo funciona en testnet, no tiene valor real.
+            </div>
+            <pre class="command">curl "https://friendbot.stellar.org/?addr=TU_DIRECCION_PUBLICA"</pre>
+            <div class="warning">
+                <strong>⚠️ IMPORTANTE:</strong> Copia tu dirección pública del paso anterior y reemplaza <code>TU_DIRECCION_PUBLICA</code> en el comando.
+            </div>
 
-            <h2>3. Desplegar contrato</h2>
-            <pre class="command">stellar contract deploy --wasm target/wasm32-unknown-unknown/release/freelancer_escrow.wasm --source testuser --network testnet</pre>
+            <h2><span class="step-number">3</span>Desplegar el contrato</h2>
+            <pre class="command">stellar contract deploy \
+  --wasm target/wasm32-unknown-unknown/release/freelancer_escrow.wasm \
+  --source testuser \
+  --network testnet</pre>
             
-            <div class="note">
-                <strong>Importante:</strong> Copia el CONTRACT_ID que te devuelve el comando deploy.
+            <div class="tip">
+                <strong>💡 Recuerda:</strong> Copia el <code>CONTRACT_ID</code> que te devuelve este comando. Lo necesitarás para invocar el contrato.
             </div>
         </section>
 
-        <section id="invoke">
-            <h1>Invocar Contrato</h1>
+        <section id="invocar">
+            <h1>📞 Invocar el Contrato Inteligente</h1>
             
-            <div class="note">
-                Reemplaza <code>CONTRACT_ID</code> con el ID que te dio el comando deploy.
+            <div class="explanation">
+                <strong>¿Qué es una invocación?</strong> Llamar a una función del contrato inteligente en la blockchain. Cada invocación es una transacción que se registra en la blockchain.
             </div>
 
-            <h2>1. Inicializar</h2>
-            <pre class="command">stellar contract invoke --id CONTRACT_ID --source testuser --network testnet initialize --empresa "ADDR" --freelancer "ADDR" --arbitro "ADDR" --token "ADDR" --hitos '[{"id":1,"descripcion":"demo","monto":1000}]'</pre>
+            <div class="warning">
+                <strong>⚠️ IMPORTANTE:</strong> En todos los comandos siguientes, reemplaza:
+                <ul>
+                    <li><code>CONTRACT_ID</code> con el ID de tu contrato (del paso anterior)</li>
+                    <li><code>ADDR_EMPRESA</code> con la dirección de la empresa (tu cuenta testuser)</li>
+                    <li><code>ADDR_FREELANCER</code> con otra cuenta que generes</li>
+                    <li><code>ADDR_ARBITRO</code> con otra cuenta adicional</li>
+                </ul>
+            </div>
 
-            <h2>2. Depositar</h2>
-            <pre class="command">stellar contract invoke --id CONTRACT_ID --source testuser --network testnet deposit --monto 1000</pre>
+            <h2><span class="step-number">1</span>Crear cuentas adicionales</h2>
+            <pre class="command">stellar keys generate freelancer
+stellar keys generate arbitro</pre>
 
-            <h2>3. Aprobar hito</h2>
-            <pre class="command">stellar contract invoke --id CONTRACT_ID --source testuser --network testnet approve_milestone --hito_id 1</pre>
+            <h2><span class="step-number">2</span>Inicializar el contrato</h2>
+            <div class="explanation">
+                <strong>¿Qué hace initialize?</strong> Configura el contrato con las direcciones de las partes y los hitos definidos. Solo se ejecuta una vez al principio.
+            </div>
+            <pre class="command">stellar contract invoke \
+  --id CONTRACT_ID \
+  --source testuser \
+  --network testnet \
+  initialize \
+  --empresa "ADDR_EMPRESA" \
+  --freelancer "ADDR_FREELANCER" \
+  --arbitro "ADDR_ARBITRO" \
+  --token "ADDR_TOKEN" \
+  --hitos '[{"id":1,"descripcion":"Desarrollo demo","monto":1000}]'</pre>
 
-            <h2>4. Liberar pago</h2>
-            <pre class="command">stellar contract invoke --id CONTRACT_ID --source testuser --network testnet release --hito_id 1</pre>
+            <h2><span class="step-number">3</span>Depositar fondos</h2>
+            <div class="explanation">
+                <strong>¿Qué hace deposit?</strong> La empresa deposita el monto total de los hitos. El contrato retiene estos fondos hasta que se cumpla cada hito.
+            </div>
+            <pre class="command">stellar contract invoke \
+  --id CONTRACT_ID \
+  --source testuser \
+  --network testnet \
+  deposit \
+  --monto 1000</pre>
 
-            <h2>5. Consultar estado</h2>
-            <pre class="command">stellar contract invoke --id CONTRACT_ID --source testuser --network testnet query_escrow</pre>
+            <h2><span class="step-number">4</span>Aprobar hito</h2>
+            <div class="explanation">
+                <strong>¿Qué hace approve_milestone?</strong> La empresa marca un hito como completado. Esto prepara los fondos para ser liberados.
+            </div>
+            <pre class="command">stellar contract invoke \
+  --id CONTRACT_ID \
+  --source testuser \
+  --network testnet \
+  approve_milestone \
+  --hito_id 1</pre>
+
+            <h2><span class="step-number">5</span>Liberar pago</h2>
+            <div class="explanation">
+                <strong>¿Qué hace release?</strong> Transfiere los fondos del hito al freelancer. Solo se puede ejecutar después de aprobar el hito.
+            </div>
+            <pre class="command">stellar contract invoke \
+  --id CONTRACT_ID \
+  --source testuser \
+  --network testnet \
+  release \
+  --hito_id 1</pre>
+
+            <h2><span class="step-number">6</span>Consultar estado</h2>
+            <div class="explanation">
+                <strong>¿Qué hace query_escrow?</strong> Retorna el estado actual del contrato: partes, hitos completados, fondos disponibles, etc.
+            </div>
+            <pre class="command">stellar contract invoke \
+  --id CONTRACT_ID \
+  --source testuser \
+  --network testnet \
+  query_escrow</pre>
         </section>
 
         <section>
-            <h1>Funciones del Contrato</h1>
+            <h1>📋 Resumen de Funciones del Contrato</h1>
             <table>
-                <tr><th>Función</th><th>Descripción</th></tr>
-                <tr><td><code>initialize</code></td><td>Crear contrato con empresa, freelancer, árbitro y hitos</td></tr>
-                <tr><td><code>deposit</code></td><td>Depositar monto total de los hitos</td></tr>
-                <tr><td><code>approve_milestone</code></td><td>Aprobar hito completado</td></tr>
-                <tr><td><code>release</code></td><td>Liberar pago del hito al freelancer</td></tr>
-                <tr><td><code>dispute</code></td><td>Abrir disputa (empresa o freelancer)</td></tr>
-                <tr><td><code>resolve</code></td><td>Resolver disputa (árbitro)</td></tr>
-                <tr><td><code>cancel</code></td><td>Cancelar y devolver fondos</td></tr>
-                <tr><td><code>query_escrow</code></td><td>Consultar estado del contrato</td></tr>
+                <tr><th>Función</th><th>Descripción</th><th>Quién puede ejecutarlo</th></tr>
+                <tr><td><code>initialize</code></td><td>Inicializar contrato con partes e hitos</td><td>Empresa</td></tr>
+                <tr><td><code>deposit</code></td><td>Depositar monto total de hitos</td><td>Empresa</td></tr>
+                <tr><td><code>approve_milestone</code></td><td>Marcar hito como completado</td><td>Empresa</td></tr>
+                <tr><td><code>release</code></td><td>Liberar pago al freelancer</td><td>Empresa</td></tr>
+                <tr><td><code>dispute</code></td><td>Abrir disputa</td><td>Empresa o Freelancer</td></tr>
+                <tr><td><code>resolve</code></td><td>Resolver disputa</td><td>Árbitro</td></tr>
+                <tr><td><code>cancel</code></td><td>Cancelar y devolver fondos</td><td>Cualquiera</td></tr>
+                <tr><td><code>query_escrow</code></td><td>Consultar estado actual</td><td>Cualquiera</td></tr>
             </table>
+        </section>
+
+        <section>
+            <h1>❓ Preguntas de Reflexión</h1>
+            <ol>
+                <li>¿Por qué es importante que el árbitro pueda resolver disputas? ¿Qué pasa si no hay árbitro?</li>
+                <li>¿Qué ventajas tiene usar un contrato inteligente vs un escrow tradicional con un tercero?</li>
+                <li>¿Cómo podría modificarse el contrato para admitir múltiples freelancers?</li>
+                <li>¿Qué sucede si la empresa decide no aprobar un hito que ya está completo?</li>
+            </ol>
         </section>
     </div>
 
     <footer>
-        <p>Tutorial FreelancerEscrow - Stellar Soroban</p>
+        <p>Tutorial FreelancerEscrow - Stellar Soroban | Curso de Sistemas</p>
     </footer>
 </body>
 </html>
