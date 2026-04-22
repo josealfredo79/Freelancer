@@ -667,6 +667,112 @@ cargo test
 
 ---
 
+## Desplegar en Stellar Testnet
+
+### 1. Instalar Stellar CLI
+
+```bash
+cargo install stellar-cli --locked
+```
+
+### 2. Agregar target WASM al Cargo.toml
+
+```toml
+[lib]
+crate-type = ["cdylib", "rlib"]
+```
+
+### 3. Compilar para WASM
+
+```bash
+rustup target add wasm32-unknown-unknown
+cargo build --release --target wasm32-unknown-unknown
+```
+
+### 4. Generar cuenta de prueba
+
+```bash
+stellar keys generate testuser
+stellar keys address testuser
+```
+
+### 5. Obtener XLM de prueba (usar Friendbot)
+
+```bash
+curl "https://friendbot.stellar.org/?addr=TU_DIRECCION_GKL"
+```
+
+### 6. Desplegar contrato
+
+```bash
+stellar contract deploy \
+  --wasm target/wasm32-unknown-unknown/release/freelancer_escrow.wasm \
+  --source testuser \
+  --network testnet
+```
+
+Copia el **Contract ID** que te devuelve el comando.
+
+### 7. Inicializar contrato
+
+```bash
+stellar contract invoke \
+  --id CONTRACT_ID \
+  --source testuser \
+  --network testnet \
+  initialize \
+  --empresa "GBFVW3NYRGX6XUTTDWQDBIJ2N7JGKJ665DMAO7L4U23KSYM2MOKEB5ML" \
+  --freelancer "GDYVREMS3C2ES4K4VTJ2Z5J6ZK3WG5DGG5X" \
+  --arbitro "GAS5MVPAL3X54BV7J5G2ZZ6LW23OGBI5J6ZK3WG5DGG5X" \
+  --token "CAQ42MQZJ5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Q42MQZJ5Z5Z5Z5" \
+  --hitos '[{"id":1,"descripcion":"desarrollo","monto":1000,"completado":false,"aprobado":false}]'
+```
+
+### 8. Depositar fondos
+
+```bash
+stellar contract invoke \
+  --id CONTRACT_ID \
+  --source testuser \
+  --network testnet \
+  deposit \
+  --monto 1000
+```
+
+### 9. Aprobar hito
+
+```bash
+stellar contract invoke \
+  --id CONTRACT_ID \
+  --source testuser \
+  --network testnet \
+  approve_milestone \
+  --hito_id 1
+```
+
+### 10. Liberar pago
+
+```bash
+stellar contract invoke \
+  --id CONTRACT_ID \
+  --source testuser \
+  --network testnet \
+  release \
+  --hito_id 1
+```
+
+### 11. Consultar estado
+
+```bash
+stellar contract invoke \
+  --id CONTRACT_ID \
+  --source testuser \
+  --network testnet \
+  query_escrow
+```
+
+---
+
 ## Flujo del Contrato
 
 ```
