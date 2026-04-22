@@ -1,0 +1,16 @@
+# Build outputs
+/target/
+*.wasm
+*.wat
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Rust
+Cargo.lock
