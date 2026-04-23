@@ -1,363 +1,1352 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutorial: Contrato Inteligente FreelancerEscrow en Stellar Soroban</title>
+    <title>Tutorial: Contrato Inteligente Escrow en Stellar Soroban</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: #f5f5f5; color: #333; line-height: 1.7; padding: 20px; }
-        .container { max-width: 950px; margin: 0 auto; }
-        
-        header { background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: white; padding: 40px; border-radius: 12px; margin-bottom: 30px; text-align: center; }
-        header h1 { font-size: 2.2rem; color: white; margin-bottom: 10px; }
-        header p { font-size: 1.1rem; opacity: 0.9; }
-        
-        nav { background: white; padding: 15px; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        nav ul { display: flex; gap: 15px; list-style: none; flex-wrap: wrap; justify-content: center; }
-        nav a { color: #2c5282; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 500; transition: all 0.2s; }
-        nav a:hover { background: #2c5282; color: white; }
-        
-        section { background: white; padding: 30px; margin-bottom: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        section:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        
-        h1 { font-size: 1.8rem; margin-bottom: 20px; color: #1a365d; border-bottom: 3px solid #2c5282; padding-bottom: 10px; }
-        h2 { font-size: 1.4rem; margin: 25px 0 12px; color: #2c5282; }
-        h3 { font-size: 1.15rem; margin: 18px 0 8px; color: #4a5568; }
-        
-        p { margin-bottom: 12px; }
-        
-        pre.command {
-            background: #1a202c;
-            padding: 18px 22px;
-            border-radius: 8px;
-            font-family: 'Fira Code', 'Consolas', monospace;
-            font-size: 0.9rem;
-            overflow-x: auto;
-            border-left: 5px solid #48bb78;
-            color: #e2e8f0;
-            margin: 12px 0;
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #38bdf8;
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(30, 41, 59, 0.7);
         }
-        
-        .code {
-            background: #edf2f7;
-            padding: 15px 18px;
-            border-radius: 8px;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            overflow-x: auto;
-            white-space: pre;
-            border: 1px solid #e2e8f0;
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
-        .explanation {
-            background: #ebf8ff;
-            padding: 15px 18px;
-            border-radius: 8px;
-            border-left: 4px solid #4299e1;
-            margin: 15px 0;
-            color: #2d3748;
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.7;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            padding-bottom: 5rem;
         }
-        
-        .tip {
-            background: #f0fff4;
-            padding: 15px 18px;
-            border-radius: 8px;
-            border-left: 4px solid #48bb78;
-            margin: 15px 0;
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
         }
-        
-        .warning {
-            background: #fffaf0;
-            padding: 15px 18px;
-            border-radius: 8px;
-            border-left: 4px solid #ed8936;
-            margin: 15px 0;
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-weight: 700;
+            line-height: 1.2;
         }
-        
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        th { background: #2c5282; color: white; }
-        tr:hover { background: #f7fafc; }
-        
-        code { background: #edf2f7; padding: 3px 8px; border-radius: 4px; color: #c53030; font-family: monospace; font-size: 0.9em; }
-        
-        footer { text-align: center; padding: 25px; color: #718096; }
-        
-        .step-number {
-            display: inline-block;
-            background: #2c5282;
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        header {
+            padding: 5rem 0 3rem;
             text-align: center;
-            line-height: 28px;
-            margin-right: 8px;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        nav {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 0.75rem;
+            position: sticky;
+            top: 2rem;
+            z-index: 50;
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        nav ul {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.5rem 1.25rem;
+            border-radius: 100px;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(236, 72, 153, 0.1));
+            border: 1px solid var(--primary);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .concept-box h3 {
+            color: var(--primary-light);
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .concept-box p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .flow-diagram {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .flow-node {
+            background: var(--surface-light);
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            padding: 1.25rem 2rem;
+            text-align: center;
+            min-width: 180px;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .flow-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+        }
+
+        .flow-node.empresa {
+            border-color: var(--info);
+        }
+
+        .flow-node.freelancer {
+            border-color: var(--success);
+        }
+
+        .flow-node.arbitro {
+            border-color: var(--warning);
+        }
+
+        .flow-node.contract {
+            border-color: var(--secondary);
+            background: rgba(236, 72, 153, 0.2);
+        }
+
+        .flow-node .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .flow-node .title {
+            font-weight: 600;
+            color: var(--text-main);
+            display: block;
+        }
+
+        .flow-node .role {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 0.25rem;
+        }
+
+        .flow-arrow {
+            color: var(--primary-light);
+            font-size: 1.5rem;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 20px 5px rgba(99, 102, 241, 0.2);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(10px);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-flow {
+            animation: slideIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .animate-flow:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .animate-flow:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .animate-flow:nth-child(3) {
+            animation-delay: 0.5s;
+        }
+
+        .animate-flow:nth-child(4) {
+            animation-delay: 0.7s;
+        }
+
+        .animate-flow:nth-child(5) {
+            animation-delay: 0.9s;
+        }
+
+        .state-machine {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+        }
+
+        .state {
+            background: var(--surface-light);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .state.active {
+            border-color: var(--info);
+            color: var(--info);
+        }
+
+        .state.depositado {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .state.completado {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .state.disputado {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .state.cancelado {
+            border-color: var(--text-muted);
+            color: var(--text-muted);
+        }
+
+        .state-arrow {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        .participants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .participant-card {
+            background: var(--surface-light);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .participant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .participant-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .participant-card h4 {
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .participant-card .responsibilities {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .participant-card .responsibilities li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
             font-size: 0.9rem;
-            font-weight: bold;
+            color: var(--text-muted);
         }
-        
-        .objective-box {
-            background: #faf5ff;
-            border: 2px solid #9f7aea;
-            padding: 20px;
+
+        .participant-card .responsibilities li:last-child {
+            border-bottom: none;
+        }
+
+        .milestone-timeline {
+            margin: 2rem 0;
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .milestone-timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+
+        .milestone-item {
+            position: relative;
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            margin-left: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .milestone-item::before {
+            content: '';
+            position: absolute;
+            left: -2.2rem;
+            top: 1.25rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid var(--bg);
+        }
+
+        .milestone-item.completed::before {
+            background: var(--success);
+        }
+
+        .milestone-item.pending::before {
+            background: var(--surface-light);
+            border: 2px solid var(--text-muted);
+        }
+
+        .milestone-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .milestone-id {
+            background: var(--primary);
+            border-radius: 8px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .milestone-amount {
+            color: var(--success);
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .milestone-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .milestone-status {
+            display: inline-block;
+            margin-top: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .milestone-status.done {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .milestone-status.waiting {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .alert {
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .alert-info {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .alert-info strong {
+            color: #38bdf8;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .alert-warning strong {
+            color: #f59e0b;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .alert-success strong {
+            color: #10b981;
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .alert-danger strong {
+            color: #ef4444;
+        }
+
+        .step {
+            margin-bottom: 2rem;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            width: 32px;
+            height: 32px;
             border-radius: 10px;
-            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
         }
-        
-        .objective-box h3 { color: #6b46c1; margin-top: 0; }
-        
-        ul, ol { margin-left: 25px; margin-bottom: 15px; }
-        li { margin-bottom: 8px; }
+
+        .step h3 {
+            font-size: 1.2rem;
+            color: var(--primary-light);
+        }
+
+        pre.command {
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: #10b981;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        pre.command::before {
+            content: "$ ";
+            color: #64748b;
+        }
+
+        code.inline {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85em;
+            color: var(--secondary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .interactive-demo {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .demo-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .demo-btn {
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .demo-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .demo-btn.active {
+            background: var(--primary);
+            border-color: var(--primary-light);
+        }
+
+        .demo-status {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .demo-state {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .demo-state .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .demo-state .indicator.active {
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .demo-state.active {
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .flow-diagram {
+                padding: 1rem;
+            }
+
+            .flow-node {
+                min-width: 140px;
+                padding: 1rem;
+            }
+
+            .state-machine {
+                flex-direction: column;
+            }
+
+            .state-arrow {
+                transform: rotate(90deg);
+            }
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
-            <h1>💼 Contrato Inteligente FreelancerEscrow</h1>
-            <p>Aprende a crear y desplegar un contrato escrow para freelancers en Stellar Soroban</p>
+            <h1 class="gradient-text">👨‍🏫 Tutorial: Contrato Escrow para Freelancers</h1>
+            <p>Aprende cómo funciona el contrato inteligente de escrow para pagos seguros en Stellar Soroban. Diseñado
+                específicamente para proteger tanto a freelancers como a empresas.</p>
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <span
+                    style="background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem;">✅
+                    Protege tu trabajo</span>
+                <span
+                    style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem;">✅
+                    Pagos garantizados</span>
+                <span
+                    style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem;">✅
+                    Sin fraude</span>
+            </div>
         </header>
 
         <nav>
             <ul>
-                <li><a href="#objetivos">🎯 Objetivos</a></li>
-                <li><a href="#entorno">⚙️ Entorno</a></li>
-                <li><a href="#compilar">🔨 Compilar</a></li>
-                <li><a href="#deploy">🚀 Deploy</a></li>
-                <li><a href="#invocar">📞 Invocar</a></li>
+                <li><a href="#que-es">¿Qué es?</a></li>
+                <li><a href="#participantes">Participantes</a></li>
+                <li><a href="#flujo">Flujo</a></li>
+                <li><a href="#estados">Estados</a></li>
+                <li><a href="#hitos">Hitos</a></li>
+                <li><a href="#funciones">Funciones</a></li>
+                <li><a href="#beneficios-freelancer">Beneficios</a></li>
+                <li><a href="#ejemplo-real">Ejemplo</a></li>
             </ul>
         </nav>
 
-        <section id="objetivos">
-            <h1>🎯 Objetivos de Aprendizaje</h1>
-            <div class="objective-box">
-                <h3>Al terminar este tutorial podrás:</h3>
-                <ul>
-                    <li>Instalar y configurar el entorno de desarrollo para Stellar Soroban</li>
-                    <li>Compilar un contrato inteligente de Rust a WebAssembly (WASM)</li>
-                    <li>Desplegar el contrato en la testnet de Stellar</li>
-                    <li>Interactuar con el contrato mediante invoked transactions</li>
-                </ul>
+        <section id="que-es">
+            <h2 class="section-title">🤔 1. ¿Qué es un Contrato Escrow?</h2>
+
+            <div class="concept-box">
+                <h3>💰 Definición Simple</h3>
+                <p>Un <strong>escrow</strong> es como un <em>triángulo de confianza</em>. El dinero pasa a un
+                    "contenedor inteligente" y solo se libera cuando el trabajo está hecho y aprobado. Ninguna de las
+                    partes puede tomarse el dinero por su cuenta.</p>
             </div>
-            <div class="explanation">
-                <strong>¿Qué es un contrato escrow?</strong> Un contrato escrow es un acuerdo neutral donde un tercero retiene el dinero hasta que se cumplan ciertas condiciones. En este caso, el contrato inteligente de Stellar retiene los fondos hasta que el cliente aprueba cada "hito" (milestone) completado por el freelancer.
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <h3>El Problema que Resuelve</h3>
+                </div>
+                <p>En trabajos freelance tradicionales hay dos problemas:</p>
+                <ul style="margin: 1rem 0 1rem 1.5rem; color: var(--text-muted);">
+                    <li>😰 La empresa paga y el freelancer no entrega</li>
+                    <li>😱 El freelancer entrega y la empresa no paga</li>
+                </ul>
+                <div class="alert alert-success">
+                    <span>✅ <strong>Solución:</strong> El contrato inteligente automatiza todo. El dinero queda
+                        bloqueado hasta que ambas partes cumplen su palabra.</span>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <h3>¿Por qué en Stellar?</h3>
+                </div>
+                <p>Stellar es ultra-rápido (3-5 segundos), ultra-barato ($0.0001 por transacción) y muy seguro. Además,
+                    Soroban permite lógica personalizada con contratos inteligentes.</p>
             </div>
         </section>
 
-        <section id="entorno">
-            <h1>⚙️ Instalación del Entorno de Desarrollo</h1>
-            
-            <p>Antes de escribir nuestro contrato inteligente, necesitamos configurar las herramientas de desarrollo. Esto incluye el lenguaje de programación Rust y la CLI de Stellar.</p>
+        <section id="participantes">
+            <h2 class="section-title">👥 2. Los 3 Actores del Contrato</h2>
 
-            <h2><span class="step-number">1</span>Instalar Rust</h2>
-            <div class="explanation">
-                <strong>¿Por qué Rust?</strong> Stellar Soroban utiliza Rust porque es un lenguaje moderno, seguro y eficiente que compila a WebAssembly. WebAssembly (WASM) es un formato de código binario que se ejecuta en cualquier navegador o blockchain de manera segura y rápida.
-            </div>
-            <pre class="command">curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh</pre>
-            <div class="tip">
-                <strong>💡 Consejo:</strong> Durante la instalación,选择选项 1 (default) para instalar todas las herramientas necesarias.
+            <div class="alert alert-info">
+                <span>ℹ️ <strong>Importante:</strong> Todo contrato escrow tiene 3 participantes claramente definidos
+                    desde el inicio.</span>
             </div>
 
-            <h2><span class="step-number">2</span>Verificar instalación de Rust</h2>
-            <pre class="command">rustc --version && cargo --version</pre>
+            <div class="participants-grid">
+                <div class="participant-card">
+                    <span class="icon">🏢</span>
+                    <h4>Empresa</h4>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Es quien paga y define las condiciones del
+                        trabajo.</p>
+                    <ul class="responsibilities">
+                        <li>Inicializa el contrato</li>
+                        <li>Deposita los fondos</li>
+                        <li>Aprueba hitos completados</li>
+                        <li>Autoriza pagos</li>
+                        <li>Puede iniciar disputa</li>
+                    </ul>
+                </div>
 
-            <h2><span class="step-number">3</span>Instalar Stellar CLI</h2>
-            <div class="explanation">
-                <strong>¿Qué es la Stellar CLI?</strong> Es una herramienta de línea de comandos que nos permite compilar, desplegar e interactuar con contratos inteligentes en la red Stellar.
-            </div>
-            <pre class="command">cargo install stellar-cli --locked</pre>
-            <div class="warning">
-                <strong>⚠️ Nota:</strong> La compilación puede tomar varios minutos (5-15) dependiendo de tu computadora.
-            </div>
+                <div class="participant-card">
+                    <span class="icon">👨‍💻</span>
+                    <h4>Freelancer</h4>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Es quien hace el trabajo y recibe el pago.
+                    </p>
+                    <ul class="responsibilities">
+                        <li>Trabaja en los hitos</li>
+                        <li>Entrega el trabajo</li>
+                        <li>Recibe pagos por hito</li>
+                        <li>Puede iniciar disputa</li>
+                        <li>No puede拿走 fondos</li>
+                    </ul>
+                </div>
 
-            <h2><span class="step-number">4</span>Verificar Stellar CLI</h2>
-            <pre class="command">stellar --version</pre>
-        </section>
-
-        <section id="compilar">
-            <h1>🔨 Compilar el Contrato Inteligente</h1>
-            
-            <p>Ahora vamos a configurar nuestro proyecto para que compile a WebAssembly. WebAssembly es un formato de código binario que se ejecuta en la blockchain de Stellar.</p>
-
-            <h2><span class="step-number">1</span>Agregar crate-type al Cargo.toml</h2>
-            <div class="explanation">
-                <strong>¿Por qué necesitamos esto?</strong> Necesitamos generar dos tipos de archivos: 
-                <ul>
-                    <li><code>cdylib</code>: Biblioteca dinámica en C para que pueda ser llamada desde fuera (el contrato desplegable)</li>
-                    <li><code>rlib</code>: Biblioteca estática de Rust para testing interno</li>
-                </ul>
-            </div>
-            <p>Abre el archivo <code>Cargo.toml</code> de tu proyecto y agrega:</p>
-            <pre class="code">[lib]
-crate-type = ["cdylib", "rlib"]</pre>
-
-            <h2><span class="step-number">2</span>Instalar objetivo WebAssembly</h2>
-            <div class="explanation">
-                <strong>¿Qué es wasm32-unknown-unknown?</strong> Es la arquitectura objetivo para compilar Rust a WebAssembly. Significa:
-                <ul>
-                    <li><code>wasm32</code>: Arquitectura de 32 bits</li>
-                    <li><code>unknown</code>: Sistema operativo desconocido (WebAssembly no tiene SO)</li>
-                    <li><code>unknown</code>: Target de entorno desconocido</li>
-                </ul>
-            </div>
-            <pre class="command">rustup target add wasm32-unknown-unknown</pre>
-
-            <h2><span class="step-number">3</span>Compilar a WebAssembly</h2>
-            <pre class="command">cargo build --release --target wasm32-unknown-unknown</pre>
-
-            <h2><span class="step-number">4</span>Verificar archivo generado</h2>
-            <pre class="command">ls -la target/wasm32-unknown-unknown/release/freelancer_escrow.wasm</pre>
-            <div class="tip">
-                <strong>💡 Consejo:</strong> El archivo .wasm debería tener un tamaño entre 20KB y 50KB aproximadamente.
+                <div class="participant-card">
+                    <span class="icon">⚖️</span>
+                    <h4>Árbitro</h4>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">El mediator neutral que resuelve conflictos.
+                    </p>
+                    <ul class="responsibilities">
+                        <li>Recibe confianza de ambos</li>
+                        <li>Solo interviene en disputas</li>
+                        <li>Decide distribución de fondos</li>
+                        <li>Resuelve conflictos</li>
+                        <li>NO tiene acceso al dinero por defecto</li>
+                    </ul>
+                </div>
             </div>
         </section>
 
-        <section id="deploy">
-            <h1>🚀 Desplegar el Contrato en Testnet</h1>
-            
-            <div class="explanation">
-                <strong>¿Por qué Testnet?</strong> La testnet es una red de pruebas de Stellar donde no usamos dinero real. Es el entorno ideal para aprender y experimentar antes de usar la red principal (Mainnet).
+        <section id="flujo">
+            <h2 class="section-title">🔄 3. Flujo Animado del Contrato</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Observa cómo fluye la información y el dinero
+                paso a paso:</p>
+
+            <div class="flow-diagram">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <span style="color: var(--primary-light); font-weight: 600;">Ciclo de Vida del Escrow</span>
+                </div>
+
+                <div class="flow-step animate-flow">
+                    <div class="flow-node empresa">
+                        <span class="icon">🏢</span>
+                        <span class="title">Empresa</span>
+                        <span class="role">Inicializa</span>
+                    </div>
+                </div>
+                <div class="flow-arrow">⬇️</div>
+
+                <div class="flow-step animate-flow">
+                    <div class="flow-node contract">
+                        <span class="icon">📋</span>
+                        <span class="title">Contrato</span>
+                        <span class="role">Crea Estado</span>
+                    </div>
+                </div>
+                <div class="flow-arrow">⬇️</div>
+
+                <div class="flow-step animate-flow">
+                    <div class="flow-node empresa">
+                        <span class="icon">💵</span>
+                        <span class="title">Empresa</span>
+                        <span class="role">Deposita Fondos</span>
+                    </div>
+                </div>
+                <div class="flow-arrow">⬇️</div>
+
+                <div class="flow-step animate-flow">
+                    <div class="flow-node contract">
+                        <span class="icon">🔒</span>
+                        <span class="title">Contrato</span>
+                        <span class="role">Retiene Fondos</span>
+                    </div>
+                </div>
+                <div class="flow-arrow">⬇️</div>
+
+                <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 1rem; flex-wrap: wrap;">
+                    <div style="text-align: center;" class="animate-flow">
+                        <div class="flow-step">
+                            <div class="flow-node freelancer">
+                                <span class="icon">💻</span>
+                                <span class="title">Freelancer</span>
+                                <span class="role">Entrega Trabajo</span>
+                            </div>
+                        </div>
+                        <div class="flow-arrow">⬇️</div>
+                        <div class="flow-step">
+                            <div class="flow-node empresa">
+                                <span class="icon">✅</span>
+                                <span class="title">Empresa</span>
+                                <span class="role">Aprueba Hito</span>
+                            </div>
+                        </div>
+                        <div class="flow-arrow">⬇️</div>
+                        <div class="flow-step">
+                            <div class="flow-node contract">
+                                <span class="icon">💰</span>
+                                <span class="title">Contrato</span>
+                                <span class="role">Paga Freelancer</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step animate-flow" style="margin-top: 1rem;">
+                    <div class="flow-node contract">
+                        <span class="icon">🎉</span>
+                        <span class="title">Contrato</span>
+                        <span class="role">¡Completado!</span>
+                    </div>
+                </div>
             </div>
 
-            <h2><span class="step-number">1</span>Generar par de claves (密钥对)</h2>
-            <div class="explanation">
-                <strong>¿Qué es una clave pública y privada?</strong> 
-                <ul>
-                    <li><strong>Dirección pública (Public Key)</strong>: Como tu número de cuenta bancaria, la comparten para recibir pagos</li>
-                    <li><strong>Clave privada (Secret Key)</strong>: Como tu contraseña, NUNCA la compartas con nadie</li>
-                </ul>
-            </div>
-            <pre class="command">stellar keys generate testuser</pre>
-
-            <h2><span class="step-number">2</span>Obtener XLM de prueba</h2>
-            <div class="explanation">
-                <strong>¿Qué es Friendbot?</strong> Es un servicio que otorga XLM de prueba gratuitos para desarrolladores. Solo funciona en testnet, no tiene valor real.
-            </div>
-            <pre class="command">curl "https://friendbot.stellar.org/?addr=TU_DIRECCION_PUBLICA"</pre>
-            <div class="warning">
-                <strong>⚠️ IMPORTANTE:</strong> Copia tu dirección pública del paso anterior y reemplaza <code>TU_DIRECCION_PUBLICA</code> en el comando.
-            </div>
-
-            <h2><span class="step-number">3</span>Desplegar el contrato</h2>
-            <pre class="command">stellar contract deploy \
-  --wasm target/wasm32-unknown-unknown/release/freelancer_escrow.wasm \
-  --source testuser \
-  --network testnet</pre>
-            
-            <div class="tip">
-                <strong>💡 Recuerda:</strong> Copia el <code>CONTRACT_ID</code> que te devuelve este comando. Lo necesitarás para invocar el contrato.
+            <div class="alert alert-info">
+                <span>💡 <strong>Nota:</strong> Este ciclo se repite por cada hito. El freelancer puede recibir pagos
+                    parciales a medida que completa cada fase del proyecto.</span>
             </div>
         </section>
 
-        <section id="invocar">
-            <h1>📞 Invocar el Contrato Inteligente</h1>
-            
-            <div class="explanation">
-                <strong>¿Qué es una invocación?</strong> Llamar a una función del contrato inteligente en la blockchain. Cada invocación es una transacción que se registra en la blockchain.
+        <section id="estados">
+            <h2 class="section-title">📊 4. Estados del Contrato</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">El contrato pasa por diferentes estados durante su
+                vida útil:</p>
+
+            <div class="state-machine">
+                <div class="state active">💡 Activo</div>
+                <span class="state-arrow">→</span>
+                <div class="state depositado">💰 Depositado</div>
+                <span class="state-arrow">→</span>
+                <div class="state completado">✅ Completado</div>
+                <span class="state-arrow">←</span>
+                <div class="state disputado">⚠️ Disputado</div>
+                <span class="state-arrow">←</span>
+                <div class="state cancelado">❌ Cancelado</div>
             </div>
 
-            <div class="warning">
-                <strong>⚠️ IMPORTANTE:</strong> En todos los comandos siguientes, reemplaza:
-                <ul>
-                    <li><code>CONTRACT_ID</code> con el ID de tu contrato (del paso anterior)</li>
-                    <li><code>ADDR_EMPRESA</code> con la dirección de la empresa (tu cuenta testuser)</li>
-                    <li><code>ADDR_FREELANCER</code> con otra cuenta que generes</li>
-                    <li><code>ADDR_ARBITRO</code> con otra cuenta adicional</li>
-                </ul>
+            <div style="margin-top: 2rem;">
+                <table>
+                    <tr>
+                        <th>Estado</th>
+                        <th>Descripción</th>
+                        <th>¿Qué puede pasar?</th>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">Activo</code></td>
+                        <td>Contrato creado, sin fondos aún</td>
+                        <td>La empresa puede depositar o cancelar</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">Depositado</code></td>
+                        <td>Dinero bloqueado en el contrato</td>
+                        <td>Aprobación + Release, Disputa, o Cancela</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">Completado</code></td>
+                        <td>Todos los hitos pagados</td>
+                        <td>Contrato terminado (final)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">Disputado</code></td>
+                        <td>Conflicto entre partes</td>
+                        <td>Solo el árbitro puede resolver</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">Cancelado</code></td>
+                        <td>Contrato terminado</td>
+                        <td>Fondos devueltos (final)</td>
+                    </tr>
+                </table>
             </div>
-
-            <h2><span class="step-number">1</span>Crear cuentas adicionales</h2>
-            <pre class="command">stellar keys generate freelancer
-stellar keys generate arbitro</pre>
-
-            <h2><span class="step-number">2</span>Inicializar el contrato</h2>
-            <div class="explanation">
-                <strong>¿Qué hace initialize?</strong> Configura el contrato con las direcciones de las partes y los hitos definidos. Solo se ejecuta una vez al principio.
-            </div>
-            <pre class="command">stellar contract invoke \
-  --id CONTRACT_ID \
-  --source testuser \
-  --network testnet \
-  initialize \
-  --empresa "ADDR_EMPRESA" \
-  --freelancer "ADDR_FREELANCER" \
-  --arbitro "ADDR_ARBITRO" \
-  --token "ADDR_TOKEN" \
-  --hitos '[{"id":1,"descripcion":"Desarrollo demo","monto":1000}]'</pre>
-
-            <h2><span class="step-number">3</span>Depositar fondos</h2>
-            <div class="explanation">
-                <strong>¿Qué hace deposit?</strong> La empresa deposita el monto total de los hitos. El contrato retiene estos fondos hasta que se cumpla cada hito.
-            </div>
-            <pre class="command">stellar contract invoke \
-  --id CONTRACT_ID \
-  --source testuser \
-  --network testnet \
-  deposit \
-  --monto 1000</pre>
-
-            <h2><span class="step-number">4</span>Aprobar hito</h2>
-            <div class="explanation">
-                <strong>¿Qué hace approve_milestone?</strong> La empresa marca un hito como completado. Esto prepara los fondos para ser liberados.
-            </div>
-            <pre class="command">stellar contract invoke \
-  --id CONTRACT_ID \
-  --source testuser \
-  --network testnet \
-  approve_milestone \
-  --hito_id 1</pre>
-
-            <h2><span class="step-number">5</span>Liberar pago</h2>
-            <div class="explanation">
-                <strong>¿Qué hace release?</strong> Transfiere los fondos del hito al freelancer. Solo se puede ejecutar después de aprobar el hito.
-            </div>
-            <pre class="command">stellar contract invoke \
-  --id CONTRACT_ID \
-  --source testuser \
-  --network testnet \
-  release \
-  --hito_id 1</pre>
-
-            <h2><span class="step-number">6</span>Consultar estado</h2>
-            <div class="explanation">
-                <strong>¿Qué hace query_escrow?</strong> Retorna el estado actual del contrato: partes, hitos completados, fondos disponibles, etc.
-            </div>
-            <pre class="command">stellar contract invoke \
-  --id CONTRACT_ID \
-  --source testuser \
-  --network testnet \
-  query_escrow</pre>
         </section>
 
-        <section>
-            <h1>📋 Resumen de Funciones del Contrato</h1>
+        <section id="hitos">
+            <h2 class="section-title">🎯 5. Sistema de Hitos (Milestones)</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Los hitos dividen el proyecto en fases pequeñas
+                para pagos graduales:</p>
+
+            <div class="milestone-timeline">
+                <div class="milestone-item completed">
+                    <div class="milestone-header">
+                        <span class="milestone-id">Hito 1</span>
+                        <span class="milestone-amount">$500 USD</span>
+                    </div>
+                    <div class="milestone-desc">Diseño UI/UX inicial y mockups</div>
+                    <span class="milestone-status done">✓ Completado y Pagado</span>
+                </div>
+
+                <div class="milestone-item completed">
+                    <div class="milestone-header">
+                        <span class="milestone-id">Hito 2</span>
+                        <span class="milestone-amount">$1,500 USD</span>
+                    </div>
+                    <div class="milestone-desc">Desarrollo del frontend</div>
+                    <span class="milestone-status done">✓ Completado y Pagado</span>
+                </div>
+
+                <div class="milestone-item pending">
+                    <div class="milestone-header">
+                        <span class="milestone-id">Hito 3</span>
+                        <span class="milestone-amount">$2,000 USD</span>
+                    </div>
+                    <div class="milestone-desc">Backend e integración</div>
+                    <span class="milestone-status waiting">⏳ En Progreso</span>
+                </div>
+
+                <div class="milestone-item pending">
+                    <div class="milestone-header">
+                        <span class="milestone-id">Hito 4</span>
+                        <span class="milestone-amount">$1,000 USD</span>
+                    </div>
+                    <div class="milestone-desc">Testing y deployment</div>
+                    <span class="milestone-status waiting">⏳ Pendiente</span>
+                </div>
+            </div>
+
+            <div class="alert alert-warning">
+                <span>⚠️ <strong>Regla Importante:</strong> Para aprobar un hito y liberar el pago: (1) el Freelancer
+                    marca como completado, (2) la Empresa verifica y APRUEBA manualmente. Ambos deben estar de
+                    acuerdo.</span>
+            </div>
+        </section>
+
+        <section id="funciones">
+            <h2 class="section-title">⚙️ 6. Funciones del Contrato (API)</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Estas son todas las operaciones que puedes
+                ejecutar:</p>
+
             <table>
-                <tr><th>Función</th><th>Descripción</th><th>Quién puede ejecutarlo</th></tr>
-                <tr><td><code>initialize</code></td><td>Inicializar contrato con partes e hitos</td><td>Empresa</td></tr>
-                <tr><td><code>deposit</code></td><td>Depositar monto total de hitos</td><td>Empresa</td></tr>
-                <tr><td><code>approve_milestone</code></td><td>Marcar hito como completado</td><td>Empresa</td></tr>
-                <tr><td><code>release</code></td><td>Liberar pago al freelancer</td><td>Empresa</td></tr>
-                <tr><td><code>dispute</code></td><td>Abrir disputa</td><td>Empresa o Freelancer</td></tr>
-                <tr><td><code>resolve</code></td><td>Resolver disputa</td><td>Árbitro</td></tr>
-                <tr><td><code>cancel</code></td><td>Cancelar y devolver fondos</td><td>Cualquiera</td></tr>
-                <tr><td><code>query_escrow</code></td><td>Consultar estado actual</td><td>Cualquiera</td></tr>
+                <tr>
+                    <th>Función</th>
+                    <th>Quién la llama</th>
+                    <th>Qué hace</th>
+                </tr>
+                <tr>
+                    <td><code class="inline">initialize</code></td>
+                    <td>🏢 Empresa</td>
+                    <td>Crea el contrato con las direcciones de los 3 participantes y la lista de hitos</td>
+                </tr>
+                <tr>
+                    <td><code class="inline">deposit</code></td>
+                    <td>🏢 Empresa</td>
+                    <td>Deposita el monto total (todos los hitos) al contrato</td>
+                </tr>
+                <tr>
+                    <td><code class="inline">approve_milestone</code></td>
+                    <td>🏢 Empresa</td>
+                    <td>Aprueba que un hito está completado y listo para pagar</td>
+                </tr>
+                <tr>
+                    <td><code class="inline">release</code></td>
+                    <td>🏢 Empresa</td>
+                    <td>Libera el pago del hito aprobado al freelancer</td>
+                </tr>
+                <tr>
+                    <td><code class="inline">dispute</code></td>
+                    <td>🏢 o 👨‍💻</td>
+                    <td>Abre una disputa si hay desacuerdo</td>
+                </tr>
+                <tr>
+                    <td><code class="inline">resolve</code></td>
+                    <td>⚖️ Árbitro</td>
+                    <td>Resuelve la disputadecidiendo cuántos fondos van a cada parte</td>
+                </tr>
+                <tr>
+                    <td><code class="inline">cancel</code></td>
+                    <td>🏢 Empresa</td>
+                    <td>Cancela el contrato (si no hay hitos aprobados, devuelve fondos)</td>
+                </tr>
+                <tr>
+                    <td><code class="inline">query_escrow</code></td>
+                    <td>Cualquiera</td>
+                    <td>Lee el estado actual del contrato (sin costo)</td>
+                </tr>
             </table>
+
+            <div class="alert alert-danger" style="margin-top: 2rem;">
+                <span>🚨 <strong>Errores Comunes a Evitar:</strong><br><br>
+                    1. <strong>El doble guion (--):</strong> Al invocar funciones en CLI, usa <code
+                        class="inline">--</code> antes del nombre de la función.<br>
+                    2. <strong>Números i128:</strong> Siempre pasa los números entre comillas: <code
+                        class="inline">"500000000"</code> (no 500000000).<br>
+                    3. <strong>Autenticación:</strong> Cada función verifica que el que llama tenga autorización.</span>
+            </div>
+        </section>
+
+        <section id="demo">
+            <h2 class="section-title">🎮 7. Demo Interactivo</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">¡Pulsa los botones para ver cómo funciona el
+                contrato!</p>
+
+            <div class="interactive-demo">
+                <div class="demo-controls">
+                    <button class="demo-btn" onclick="resetDemo()">🔄 Reiniciar</button>
+                    <button class="demo-btn" onclick="callInitialize()">1. Initialize</button>
+                    <button class="demo-btn" onclick="callDeposit()">2. Deposit</button>
+                    <button class="demo-btn" onclick="callApprove()">3. Approve Hito</button>
+                    <button class="demo-btn" onclick="callRelease()">4. Release</button>
+                </div>
+
+                <div class="demo-status">
+                    <div style="margin-bottom: 1rem; color: var(--primary-light); font-weight: 600;">Estado del
+                        Contrato: <span id="demoState">No Inicializado</span></div>
+
+                    <div class="demo-state" id="stateEmp">
+                        <div class="indicator" id="indEmp"></div>
+                        <span>🏢 Empresa puede actuar</span>
+                    </div>
+                    <div class="demo-state" id="stateFree">
+                        <div class="indicator" id="indFree"></div>
+                        <span>👨‍💻 Freelancer puede actuar</span>
+                    </div>
+                    <div class="demo-state" id="stateArb">
+                        <div class="indicator" id="indArb"></div>
+                        <span>⚖️ Árbitro puede actuar</span>
+                    </div>
+                    <div class="demo-state" id="stateFunds">
+                        <div class="indicator" id="indFunds"></div>
+                        <span>💰 Fondos en escrow</span>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section>
-            <h1>❓ Preguntas de Reflexión</h1>
-            <ol>
-                <li>¿Por qué es importante que el árbitro pueda resolver disputas? ¿Qué pasa si no hay árbitro?</li>
-                <li>¿Qué ventajas tiene usar un contrato inteligente vs un escrow tradicional con un tercero?</li>
-                <li>¿Cómo podría modificarse el contrato para admitir múltiples freelancers?</li>
-                <li>¿Qué sucede si la empresa decide no aprobar un hito que ya está completo?</li>
-            </ol>
+            <h2 class="section-title">📚 8. Resumen Visual</h2>
+
+            <div class="concept-box"
+                style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(56, 189, 248, 0.1)); border-color: var(--success);">
+                <h3 style="color: var(--success);">🚀 ¡Listo para Usar!</h3>
+                <p style="font-size: 1.1rem;">El contrato escrow de Stellar protege a ambas partes con:</p>
+                <ul style="text-align: left; margin: 1.5rem 0 0 1.5rem; color: var(--text-muted);">
+                    <li><strong>✅ Fondos seguros:</strong> El dinero queda bloqueado hasta aprobación</li>
+                    <li><strong>✅ Pagos graduales:</strong> Solo recibes por lo que completaste</li>
+                    <li><strong>✅ Resolución de conflictos:</strong> El árbitro decide si hay disputa</li>
+                    <li><strong>✅ Transparencia total:</strong> Cualquiera puede verificar el estado</li>
+                    <li><strong>✅ Costo ultra-bajo:</strong> Centésimas de centavo por operación</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="beneficios-freelancer">
+            <h2 class="section-title">💼 9. Beneficios Específicos para Freelancers</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Este contrato está diseñado para protegerte y
+                darte confianza en tus trabajos remotos:</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                <div
+                    style="background: var(--surface-light); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--border);">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">💰</div>
+                    <h4 style="color: var(--success); margin-bottom: 0.5rem;">Pago Garantizado</h4>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Una vez que depositan, el dinero está
+                        bloqueado a tu favor. No pueden跑了 (escaparse) sin pagar.</p>
+                </div>
+
+                <div
+                    style="background: var(--surface-light); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--border);">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">📅</div>
+                    <h4 style="color: var(--success); margin-bottom: 0.5rem;">Pagos por Hitos</h4>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Recibes poco a poco según avanzas. No
+                        esperas hasta el final para cobrar tu trabajo.</p>
+                </div>
+
+                <div
+                    style="background: var(--surface-light); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--border);">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">🤝</div>
+                    <h4 style="color: var(--success); margin-bottom: 0.5rem;">Sin Necesidad de Confianza</h4>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">No necesitas conocer a la empresa. El
+                        contrato es tu garantía automática.</p>
+                </div>
+
+                <div
+                    style="background: var(--surface-light); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--border);">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">⚖️</div>
+                    <h4 style="color: var(--success); margin-bottom: 0.5rem;">Resolver Disputas</h4>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Si hay conflicto, un árbitro neutral
+                        decide. No quedas desprotegido.</p>
+                </div>
+
+                <div
+                    style="background: var(--surface-light); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--border);">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">🌍</div>
+                    <h4 style="color: var(--success); margin-bottom: 0.5rem;">Pagos Globales</h4>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Puedes recibir desde cualquier país del
+                        mundo. Stellar funciona internacionalmente.</p>
+                </div>
+
+                <div
+                    style="background: var(--surface-light); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--border);">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">💸</div>
+                    <h4 style="color: var(--success); margin-bottom: 0.5rem;">Costo Bajo</h4>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Las transacciones cuestan centésimas de
+                        centavo. No pierdes dinero en comisiones.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="ejemplo-real">
+            <h2 class="section-title">📖 10. Ejemplo Real</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Imagina este escenario:</p>
+
+            <div
+                style="background: var(--surface-light); border-radius: 16px; padding: 2rem; border: 1px solid var(--border);">
+                <div style="margin-bottom: 1.5rem;">
+                    <span
+                        style="background: var(--primary); padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.85rem;">Escenario</span>
+                </div>
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem;"><strong>👨‍💻 Freelancer:</strong> "Necesito que me
+                    hagan un sitio web"</p>
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem;"><strong>🏢 Empresa:</strong> "Ok, te pago $5,000
+                    por el proyecto"</p>
+
+                <div style="display: flex; gap: 1rem; margin: 2rem 0; flex-wrap: wrap;">
+                    <div
+                        style="flex: 1; min-width: 200px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 1.5rem;">
+                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🎯</div>
+                        <h4 style="color: var(--info); margin-bottom: 0.5rem;">Sin Escrow (Peligroso)</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Empresa dice: "paga ahora y te mando el
+                            diseño"<br>Freelancer: "ok" 🎣<br><strong>Resultado:</strong> Empresa desaparece sin pagar.
+                        </p>
+                    </div>
+
+                    <div
+                        style="flex: 1; min-width: 200px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1.5rem;">
+                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🛡️</div>
+                        <h4 style="color: var(--success); margin-bottom: 0.5rem;">Con Escrow (Seguro)</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Empresa deposita $5,000 en
+                            contrato<br>Freelancer entrega hitos<br>Empresa aprueba → Freelancer
+                            cobra<br><strong>Resultado:</strong> Ambos protegidos ✅</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="por-que-stellar">
+            <h2 class="section-title">🌟 11. ¿Por qué usar Stellar?</h2>
+
+            <table>
+                <tr>
+                    <th>Característica</th>
+                    <th> Stellar</th>
+                    <th>Métodos Tradicionales</th>
+                </tr>
+                <tr>
+                    <td>Tiempo de transacción</td>
+                    <td style="color: var(--success);">3-5 segundos</td>
+                    <td style="color: var(--text-muted);">2-5 días</td>
+                </tr>
+                <tr>
+                    <td>Costo por transacción</td>
+                    <td style="color: var(--success);">$0.0001</td>
+                    <td style="color: var(--text-muted);">2-5% + fees</td>
+                </tr>
+                <tr>
+                    <td>Dispute resolution</td>
+                    <td style="color: var(--success);">Automático + Árbitro</td>
+                    <td style="color: var(--text-muted);">Courts/Lawyers</td>
+                </tr>
+                <tr>
+                    <td>Disponibilidad</td>
+                    <td style="color: var(--success);">24/7 global</td>
+                    <td style="color: var(--text-muted);">Horas laborales</td>
+                </tr>
+                <tr>
+                    <td>Pagos internacionales</td>
+                    <td style="color: var(--success);">Instantáneo</td>
+                    <td style="color: var(--text-muted);">SWIFT 3-5 días</td>
+                </tr>
+            </table>
         </section>
     </div>
 
-    <footer>
-        <p>Tutorial FreelancerEscrow - Stellar Soroban | Curso de Sistemas</p>
-    </footer>
+    <script>
+        let currentState = 'none';
+        let fundsDeposited = false;
+        let milestoneApproved = false;
+        let milestoneReleased = false;
+
+        function resetDemo() {
+            currentState = 'none';
+            fundsDeposited = false;
+            milestoneApproved = false;
+            milestoneReleased = false;
+            updateDemoUI();
+        }
+
+        function callInitialize() {
+            if (currentState === 'none') {
+                currentState = 'Activo';
+                updateDemoUI();
+            }
+        }
+
+        function callDeposit() {
+            if (currentState === 'Activo') {
+                currentState = 'Depositado';
+                fundsDeposited = true;
+                updateDemoUI();
+            }
+        }
+
+        function callApprove() {
+            if (currentState === 'Depositado' && fundsDeposited) {
+                milestoneApproved = true;
+                updateDemoUI();
+            }
+        }
+
+        function callRelease() {
+            if (milestoneApproved && !milestoneReleased) {
+                milestoneReleased = true;
+                currentState = 'Completado';
+                fundsDeposited = false;
+                updateDemoUI();
+            }
+        }
+
+        function updateDemoUI() {
+            const stateEl = document.getElementById('demoState');
+            const states = {
+                'none': 'No Inicializado',
+                'Activo': '💡 Activo',
+                'Depositado': '💰 Depositado',
+                'Completado': '✅ Completado',
+                'Disputado': '⚠️ Disputado',
+                'Cancelado': '❌ Cancelado'
+            };
+            stateEl.textContent = states[currentState] || 'No Inicializado';
+
+            document.getElementById('indEmp').classList.toggle('active', currentState === 'Activo' || currentState === 'Depositado');
+            document.getElementById('indFree').classList.toggle('active', milestoneReleased);
+            document.getElementById('indArb').classList.toggle('active', currentState === 'Disputado');
+            document.getElementById('indFunds').classList.toggle('active', fundsDeposited);
+
+            document.getElementById('stateEmp').classList.toggle('active', currentState === 'Activo' || currentState === 'Depositado');
+            document.getElementById('stateFunds').classList.toggle('active', fundsDeposited);
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-flow').forEach(el => observer.observe(el));
+    </script>
 </body>
+
 </html>
