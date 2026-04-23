@@ -1350,98 +1350,109 @@
     </script>
 </body>
 
-        <section id="despliegue">
-            <h2 class="section-title">🚀 12. Guía de Despliegue a Testnet</h2>
-            <p style="color: var(--text-muted); margin-bottom: 2rem;">Sigue estos pasos para compilar, configurar y desplegar tu contrato inteligente en la testnet de Stellar. Cada comando está listo para copiar y pegar.</p>
+<section id="despliegue">
+    <h2 class="section-title">🚀 12. Guía de Despliegue a Testnet</h2>
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">Sigue estos pasos para compilar, configurar y desplegar tu
+        contrato inteligente en la testnet de Stellar. Cada comando está listo para copiar y pegar.</p>
 
-            <div class="step">
-                <div class="step-header">
-                    <div class="step-number">1</div>
-                    <h3>Requisitos Previos</h3>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
-                    <div style="background: var(--surface-light); padding: 1rem; border-radius: 10px; text-align: center;">
-                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🦀</div>
-                        <div style="color: var(--primary-light); font-weight: 600;">Rust</div>
-                        <div style="color: var(--text-muted); font-size: 0.85rem;">rustup.rs</div>
-                    </div>
-                    <div style="background: var(--surface-light); padding: 1rem; border-radius: 10px; text-align: center;">
-                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚡</div>
-                        <div style="color: var(--primary-light); font-weight: 600;">Stellar CLI</div>
-                        <div style="color: var(--text-muted); font-size: 0.85rem;">stellar-cli</div>
-                    </div>
-                    <div style="background: var(--surface-light); padding: 1rem; border-radius: 10px; text-align: center;">
-                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🐳</div>
-                        <div style="color: var(--primary-light); font-weight: 600;">Docker</div>
-                        <div style="color: var(--text-muted); font-size: 0.85rem;">Optional</div>
-                    </div>
-                </div>
+    <div class="step">
+        <div class="step-header">
+            <div class="step-number">1</div>
+            <h3>Requisitos Previos</h3>
+        </div>
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
+            <div style="background: var(--surface-light); padding: 1rem; border-radius: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🦀</div>
+                <div style="color: var(--primary-light); font-weight: 600;">Rust</div>
+                <div style="color: var(--text-muted); font-size: 0.85rem;">rustup.rs</div>
             </div>
-
-            <div class="step">
-                <div class="step-header">
-                    <div class="step-number">2</div>
-                    <h3>Instalar Herramientas</h3>
-                </div>
-                <div class="alert alert-info">
-                    <span>💡 <strong>Primero:</strong> Si no tienes Rust, instálalo. Stellar CLI te permitirá compilar y desplegar contratos.</span>
-                </div>
-                <pre class="command">curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh</pre>
-                <pre class="command">cargo install stellar-cli --locked</pre>
+            <div style="background: var(--surface-light); padding: 1rem; border-radius: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚡</div>
+                <div style="color: var(--primary-light); font-weight: 600;">Stellar CLI</div>
+                <div style="color: var(--text-muted); font-size: 0.85rem;">stellar-cli</div>
             </div>
-
-            <div class="step">
-                <div class="step-header">
-                    <div class="step-number">3</div>
-                    <h3>Configurar Wallet</h3>
-                </div>
-                <div class="alert alert-warning">
-                    <span>⚠️ <strong>Importante:</strong> Crea una clave para la testnet. Usa el mismo nombre en todos los comandos.</span>
-                </div>
-                <pre class="command">stellar keys generate freelancer</pre>
-                <pre class="command">stellar keys address freelancer</pre>
-                <p style="color: var(--text-muted); margin-top: 1rem;"><strong>Resultado:</strong> Te mostrará una dirección como <code class="inline">GBSA...</code></p>
+            <div style="background: var(--surface-light); padding: 1rem; border-radius: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🐳</div>
+                <div style="color: var(--primary-light); font-weight: 600;">Docker</div>
+                <div style="color: var(--text-muted); font-size: 0.85rem;">Optional</div>
             </div>
+        </div>
+    </div>
 
-            <div class="step">
-                <div class="step-header">
-                    <div class="step-number">4</div>
-                    <h3>Fondear Cuenta (Testnet)</h3>
-                </div>
-                <div class="alert alert-info">
-                    <span>💡 <strong>Friendbot:</strong> Ve a <a href="https://friendbot.stellar.org/" target="_blank" style="color: var(--secondary);">friendbot.stellar.org</a> y pega tu dirección para obtener XLM de prueba gratis.</span>
-                </div>
-                <p style="color: var(--text-muted);">O usa este comando para fondeo automático:</p>
-                <pre class="command">stellar keys fund freelancer --network testnet</pre>
-            </div>
+    <div class="step">
+        <div class="step-header">
+            <div class="step-number">2</div>
+            <h3>Instalar Herramientas</h3>
+        </div>
+        <div class="alert alert-info">
+            <span>💡 <strong>Primero:</strong> Si no tienes Rust, instálalo. Stellar CLI te permitirá compilar y
+                desplegar contratos.</span>
+        </div>
+        <pre class="command">curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh</pre>
+        <pre class="command">cargo install stellar-cli --locked</pre>
+    </div>
 
-            <div class="step">
-                <div class="step-header">
-                    <div class="step-number">5</div>
-                    <h3>Compilar a WebAssembly</h3>
-                </div>
-                <div class="alert alert-warning">
-                    <span>⚠️ <strong>Debes usar el target wasm32:</strong> Stellar usa WebAssembly para ejecutar contratos de forma segura y rápida.</span>
-                </div>
-                <pre class="command">cargo build --release --target wasm32-unknown-unknown</pre>
-                <p style="margin-top: 1rem; color: var(--text-muted);">Esto generará el archivo:</p>
-                <p style="color: var(--success); font-family: 'Fira Code', monospace;">target/wasm32-unknown-unknown/release/freelancer_escrow.wasm</p>
-            </div>
+    <div class="step">
+        <div class="step-header">
+            <div class="step-number">3</div>
+            <h3>Configurar Wallet</h3>
+        </div>
+        <div class="alert alert-warning">
+            <span>⚠️ <strong>Importante:</strong> Crea una clave para la testnet. Usa el mismo nombre en todos los
+                comandos.</span>
+        </div>
+        <pre class="command">stellar keys generate freelancer</pre>
+        <pre class="command">stellar keys address freelancer</pre>
+        <p style="color: var(--text-muted); margin-top: 1rem;"><strong>Resultado:</strong> Te mostrará una dirección
+            como <code class="inline">GBSA...</code></p>
+    </div>
 
-            <div class="step">
-                <div class="step-header">
-                    <div class="step-number">6</div>
-                    <h3>Optimizar el WASM</h3>
-                </div>
-                <div class="alert alert-warning">
-                    <span>⚠️ <strong>Importante:</strong> Siempre optimiza antes de desplegar. Esto elimina código no necesario y reduce errores.</span>
-                </div>
-                <pre class="command">stellar contract optimize --wasm target/wasm32-unknown-unknown/release/freelancer_escrow.wasm</pre>
-                <p style="margin-top: 1rem; color: var(--text-muted);">Esto creará:</p>
-                <p style="color: var(--success); font-family: 'Fira Code', monospace;">freelancer_escrow.optimized.wasm</p>
-            </div>
+    <div class="step">
+        <div class="step-header">
+            <div class="step-number">4</div>
+            <h3>Fondear Cuenta (Testnet)</h3>
+        </div>
+        <div class="alert alert-info">
+            <span>💡 <strong>Friendbot:</strong> Ve a <a href="https://friendbot.stellar.org/" target="_blank"
+                    style="color: var(--secondary);">friendbot.stellar.org</a> y pega tu dirección para obtener XLM de
+                prueba gratis.</span>
+        </div>
+        <p style="color: var(--text-muted);">O usa este comando para fondeo automático:</p>
+        <pre class="command">stellar keys fund freelancer --network testnet</pre>
+    </div>
 
-            <div class="step">
+    <div class="step">
+        <div class="step-header">
+            <div class="step-number">5</div>
+            <h3>Compilar a WebAssembly</h3>
+        </div>
+        <div class="alert alert-warning">
+            <span>⚠️ <strong>Debes usar el target wasm32:</strong> Stellar usa WebAssembly para ejecutar contratos de
+                forma segura y rápida.</span>
+        </div>
+        <pre class="command">cargo build --release --target wasm32-unknown-unknown</pre>
+        <p style="margin-top: 1rem; color: var(--text-muted);">Esto generará el archivo:</p>
+        <p style="color: var(--success); font-family: 'Fira Code', monospace;">
+            target/wasm32-unknown-unknown/release/freelancer_escrow.wasm</p>
+    </div>
+
+    <div class="step">
+        <div class="step-header">
+            <div class="step-number">6</div>
+            <h3>Optimizar el WASM</h3>
+        </div>
+        <div class="alert alert-warning">
+            <span>⚠️ <strong>Importante:</strong> Siempre optimiza antes de desplegar. Esto elimina código no necesario
+                y reduce errores.</span>
+        </div>
+        <pre
+            class="command">stellar contract optimize --wasm target/wasm32-unknown-unknown/release/freelancer_escrow.wasm</pre>
+        <p style="margin-top: 1rem; color: var(--text-muted);">Esto creará:</p>
+        <p style="color: var(--success); font-family: 'Fira Code', monospace;">freelancer_escrow.optimized.wasm</p>
+    </div>
+
+<div class="step">
                 <div class="step-header">
                     <div class="step-number">7</div>
                     <h3>Subir a Testnet</h3>
@@ -1461,6 +1472,9 @@
                     <span>✅ <strong>Último paso:</strong> Despliega el contrato y guarda el ID del contrato.</span>
                 </div>
                 <pre class="command">CONTRACT_ID=$(stellar contract deploy --network testnet --source freelancer --wasm-hash $WASM_HASH) && echo "Contract ID: $CONTRACT_ID"</pre>
+                <div class="alert alert-info" style="margin-top: 1rem;">
+                    <span>💡 <strong>También puedes usar el contrato ya desplegado:</strong> <code style="font-size: 0.9rem;">CAVOGXUTNJ4OVDT2H2GVCP6DOFZCF6CLKFIKWAJGYKI2MAZM3EUC4SEM</code></span>
+                </div>
             </div>
 
             <div class="step">
@@ -1470,6 +1484,45 @@
                 </div>
                 <p style="color: var(--text-muted); margin-bottom: 1rem;">Antes de usar, debes inicializar con las direcciones de los participantes y los hitos:</p>
                 <pre class="command">stellar contract invoke \
+  --id CAVOGXUTNJ4OVDT2H2GVCP6DOFZCF6CLKFIKWAJGYKI2MAZM3EUC4SEM \
+  --source freelancer \
+  --network testnet \
+  -- \
+  initialize \
+  --empresa GBSA27XJEXNH4N276LHG2YJXR7RMKWCBYB7ICUSBNQSFMKORFDDY4Q5C \
+  --freelancer GBSA27XJEXNH4N276LHG2YJXR7RMKWCBYB7ICUSBNQSFMKORFDDY4Q5C \
+  --arbitro GBSA27XJEXNH4N276LHG2YJXR7RMKWCBYB7ICUSBNQSFMKORFDDY4Q5C \
+  --token CDLZFC3T3U2CQTJQDXB2D4M5Z6N7P8Q9R0S \
+  --hitos '[{"id": 1, "descripcion": "Fase 1", "monto": "500000000", "completado": false, "aprobado": false}]'</pre>
+            </div>
+        <div class="alert alert-success">
+            <span>✅ <strong>Este comando hace 2 cosas:</strong> (1) Sube el WASM a la red, (2) Obtiene el hash para
+                deploy.</span>
+        </div>
+        <pre
+            class="command">WASM_HASH=$(stellar contract upload --network testnet --source freelancer --wasm target/wasm32-unknown-unknown/release/freelancer_escrow.optimized.wasm) && echo "WASM Hash: $WASM_HASH"</pre>
+    </div>
+
+    <div class="step">
+        <div class="step-header">
+            <div class="step-number">8</div>
+            <h3>Desplegar el Contrato</h3>
+        </div>
+        <div class="alert alert-success">
+            <span>✅ <strong>Último paso:</strong> Despliega el contrato y guarda el ID del contrato.</span>
+        </div>
+        <pre
+            class="command">CONTRACT_ID=$(stellar contract deploy --network testnet --source freelancer --wasm-hash $WASM_HASH) && echo "Contract ID: $CONTRACT_ID"</pre>
+    </div>
+
+    <div class="step">
+        <div class="step-header">
+            <div class="step-number">9</div>
+            <h3>Inicializar el Contrato</h3>
+        </div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">Antes de usar, debes inicializar con las direcciones
+            de los participantes y los hitos:</p>
+        <pre class="command">stellar contract invoke \
   --id $CONTRACT_ID \
   --source freelancer \
   --network testnet \
@@ -1480,14 +1533,16 @@
   --arbitro GBSA... \
   --token CDLZFC3T3U2CQTJQDXB2D4M5Z6N7P8Q9R0S \
   --hitos '[{"id": 1, "descripcion": "Fase 1", "monto": "500000000", "completado": false, "aprobado": false}]'</pre>
-            </div>
+    </div>
 
-            <div class="alert alert-info" style="margin-top: 2rem;">
-                <span>💡 <strong>Nota:</strong> El token USDX de ejemplo es <code class="inline">CDLZFC3T3U2CQTJQDXB2D4M5Z6N7P8Q9R0S</code> (USDC en testnet). Reemplaza las direcciones GBSA... con las direcciones reales.</span>
-            </div>
-        </section>
+    <div class="alert alert-info" style="margin-top: 2rem;">
+        <span>💡 <strong>Nota:</strong> El token USDX de ejemplo es <code
+                class="inline">CDLZFC3T3U2CQTJQDXB2D4M5Z6N7P8Q9R0S</code> (USDC en testnet). Reemplaza las direcciones
+            GBSA... con las direcciones reales.</span>
+    </div>
+</section>
 
-        <section id="referencia-rapida">
+<section id="referencia-rapida">
             <h2 class="section-title">📋 13. Referencia Rápida</h2>
             
             <table>
@@ -1498,6 +1553,18 @@
                 <tr>
                     <td>Ver dirección</td>
                     <td><code class="inline">stellar keys address freelancer</code></td>
+                </tr>
+                <tr>
+                    <td>Mi dirección</td>
+                    <td><code class="inline">GBSA27XJEXNH4N276LHG2YJXR7RMKWCBYB7ICUSBNQSFMKORFDDY4Q5C</code></td>
+                </tr>
+                <tr>
+                    <td>Contract ID</td>
+                    <td><code class="inline">CAVOGXUTNJ4OVDT2H2GVCP6DOFZCF6CLKFIKWAJGYKI2MAZM3EUC4SEM</code></td>
+                </tr>
+                <tr>
+                    <td>Token (USDC)</td>
+                    <td><code class="inline">CDLZFC3T3U2CQTJQDXB2D4M5Z6N7P8Q9R0S</code></td>
                 </tr>
                 <tr>
                     <td>Compilar</td>
@@ -1526,54 +1593,82 @@
             </table>
         </section>
 
-        <section id="comandos-uno">
-            <h2 class="section-title">⚡ 14. Comandos en Uno (Todo junto)</h2>
-            <p style="color: var(--text-muted); margin-bottom: 2rem;">Para usuarios avanzados, aquí tienes los comandos esenciales en una sola línea:</p>
+<section id="comandos-uno">
+    <h2 class="section-title">⚡ 14. Comandos en Uno (Todo junto)</h2>
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">Para usuarios avanzados, aquí tienes los comandos
+        esenciales en una sola línea:</p>
 
-            <div class="alert alert-warning">
-                <span>⚠️ <strong>Atención:</strong> Copia y ejecuta cada bloque completo. Antes de ejecutar, asegúrate de tener XLM en tu cuenta.</span>
-            </div>
+    <div class="alert alert-warning">
+        <span>⚠️ <strong>Atención:</strong> Copia y ejecuta cada bloque completo. Antes de ejecutar, asegúrate de tener
+            XLM en tu cuenta.</span>
+    </div>
 
-            <div style="margin-top: 2rem;">
-                <h3 style="color: var(--primary-light); margin-bottom: 1rem;">🆕 Nuevo Proyecto</h3>
-                <pre class="command">cargo new --lib freelancer_escrow</pre>
-            </div>
+    <div style="margin-top: 2rem;">
+        <h3 style="color: var(--primary-light); margin-bottom: 1rem;">🆕 Nuevo Proyecto</h3>
+        <pre class="command">cargo new --lib freelancer_escrow</pre>
+    </div>
 
-            <div style="margin-top: 2rem;">
-                <h3 style="color: var(--primary-light); margin-bottom: 1rem;">🔨 Compilar + Optimizar</h3>
-                <pre class="command">cargo build --release --target wasm32-unknown-unknown && stellar contract optimize --wasm target/wasm32-unknown-unknown/release/freelancer_escrow.wasm</pre>
-            </div>
+    <div style="margin-top: 2rem;">
+        <h3 style="color: var(--primary-light); margin-bottom: 1rem;">🔨 Compilar + Optimizar</h3>
+        <pre
+            class="command">cargo build --release --target wasm32-unknown-unknown && stellar contract optimize --wasm target/wasm32-unknown-unknown/release/freelancer_escrow.wasm</pre>
+    </div>
 
-            <div style="margin-top: 2rem;">
-                <h3 style="color: var(--primary-light); margin-bottom: 1rem;">🚀 Subir + Desplegar</h3>
-                <pre class="command">WASM_HASH=$(stellar contract upload --network testnet --source freelancer --wasm target/wasm32-unknown-unknown/release/freelancer_escrow.optimized.wasm) && CONTRACT_ID=$(stellar contract deploy --network testnet --source freelancer --wasm-hash $WASM_HASH) && echo "Contract ID: $CONTRACT_ID"</pre>
-            </div>
+    <div style="margin-top: 2rem;">
+        <h3 style="color: var(--primary-light); margin-bottom: 1rem;">🚀 Subir + Desplegar</h3>
+        <pre
+            class="command">WASM_HASH=$(stellar contract upload --network testnet --source freelancer --wasm target/wasm32-unknown-unknown/release/freelancer_escrow.optimized.wasm) && CONTRACT_ID=$(stellar contract deploy --network testnet --source freelancer --wasm-hash $WASM_HASH) && echo "Contract ID: $CONTRACT_ID"</pre>
+    </div>
 
-            <div style="margin-top: 2rem;">
+    <div style="margin-top: 2rem;">
+        <h3 style="color: var(--primary-light); margin-bottom: 1rem;">💰 Inicializar</h3>
+        <pre
+            class="command">stellar contract invoke --id TU_CONTRACT_ID --source freelancer --network testnet -- --initialize --empresa TU_DIRECCION --freelancer TU_DIRECCION --arbitro TU_DIRECCION --token CDLZFC3T3U2CQTJQDXB2D4M5Z6N7P8Q9R0S --hitos '[{"id":1,"descripcion":"Diseño","monto":"100000000","completado":false,"aprobado":false}]'</pre>
+    </div>
+
+    <div style="margin-top: 2rem;">
+        <h3 style="color: var(--primary-light); margin-bottom: 1rem;">💵 Deposit</h3>
+        <pre
+            class="command">stellar contract invoke --id TU_CONTRACT_ID --source freelancer --network testnet -- --deposit --monto "100000000"</pre>
+    </div>
+
+    <div style="margin-top: 2rem;">
+        <h3 style="color: var(--primary-light); margin-bottom: 1rem;">✅ Aprobar Hito</h3>
+        <pre
+            class="command">stellar contract invoke --id TU_CONTRACT_ID --source freelancer --network testnet -- --approve_milestone --hito_id 1</pre>
+    </div>
+
+    <div style="margin-top: 2rem;">
+        <h3 style="color: var(--primary-light); margin-bottom: 1rem;">💸 Release Pago</h3>
+        <pre
+            class="command">stellar contract invoke --id TU_CONTRACT_ID --source freelancer --network testnet -- --release --hito_id 1</pre>
+    </div>
+
+<div style="margin-top: 2rem;">
                 <h3 style="color: var(--primary-light); margin-bottom: 1rem;">💰 Inicializar</h3>
-                <pre class="command">stellar contract invoke --id TU_CONTRACT_ID --source freelancer --network testnet -- --initialize --empresa TU_DIRECCION --freelancer TU_DIRECCION --arbitro TU_DIRECCION --token CDLZFC3T3U2CQTJQDXB2D4M5Z6N7P8Q9R0S --hitos '[{"id":1,"descripcion":"Diseño","monto":"100000000","completado":false,"aprobado":false}]'</pre>
+                <pre class="command">stellar contract invoke --id CAVOGXUTNJ4OVDT2H2GVCP6DOFZCF6CLKFIKWAJGYKI2MAZM3EUC4SEM --source freelancer --network testnet -- --initialize --empresa GBSA27XJEXNH4N276LHG2YJXR7RMKWCBYB7ICUSBNQSFMKORFDDY4Q5C --freelancer GBSA27XJEXNH4N276LHG2YJXR7RMKWCBYB7ICUSBNQSFMKORFDDY4Q5C --arbitro GBSA27XJEXNH4N276LHG2YJXR7RMKWCBYB7ICUSBNQSFMKORFDDY4Q5C --token CDLZFC3T3U2CQTJQDXB2D4M5Z6N7P8Q9R0S --hitos '[{"id":1,"descripcion":"Diseño","monto":"100000000","completado":false,"aprobado":false}]'</pre>
             </div>
 
             <div style="margin-top: 2rem;">
                 <h3 style="color: var(--primary-light); margin-bottom: 1rem;">💵 Deposit</h3>
-                <pre class="command">stellar contract invoke --id TU_CONTRACT_ID --source freelancer --network testnet -- --deposit --monto "100000000"</pre>
+                <pre class="command">stellar contract invoke --id CAVOGXUTNJ4OVDT2H2GVCP6DOFZCF6CLKFIKWAJGYKI2MAZM3EUC4SEM --source freelancer --network testnet -- --deposit --monto "100000000"</pre>
             </div>
 
             <div style="margin-top: 2rem;">
                 <h3 style="color: var(--primary-light); margin-bottom: 1rem;">✅ Aprobar Hito</h3>
-                <pre class="command">stellar contract invoke --id TU_CONTRACT_ID --source freelancer --network testnet -- --approve_milestone --hito_id 1</pre>
+                <pre class="command">stellar contract invoke --id CAVOGXUTNJ4OVDT2H2GVCP6DOFZCF6CLKFIKWAJGYKI2MAZM3EUC4SEM --source freelancer --network testnet -- --approve_milestone --hito_id 1</pre>
             </div>
 
             <div style="margin-top: 2rem;">
                 <h3 style="color: var(--primary-light); margin-bottom: 1rem;">💸 Release Pago</h3>
-                <pre class="command">stellar contract invoke --id TU_CONTRACT_ID --source freelancer --network testnet -- --release --hito_id 1</pre>
+                <pre class="command">stellar contract invoke --id CAVOGXUTNJ4OVDT2H2GVCP6DOFZCF6CLKFIKWAJGYKI2MAZM3EUC4SEM --source freelancer --network testnet -- --release --hito_id 1</pre>
             </div>
 
             <div style="margin-top: 2rem;">
                 <h3 style="color: var(--primary-light); margin-bottom: 1rem;">🔍 Ver Estado</h3>
-                <pre class="command">stellar contract invoke --id TU_CONTRACT_ID --network testnet -- --query_escrow</pre>
+                <pre class="command">stellar contract invoke --id CAVOGXUTNJ4OVDT2H2GVCP6DOFZCF6CLKFIKWAJGYKI2MAZM3EUC4SEM --network testnet -- --query_escrow</pre>
             </div>
-        </section>
-    </div>
+</section>
+</div>
 
 </html>
